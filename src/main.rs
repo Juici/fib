@@ -71,20 +71,46 @@ fn fib(n: usize) -> BigUint {
     f0
 }
 
+fn fib_big(n: BigUint) -> BigUint {
+    let mut f0 = BigUint::zero();
+    let mut f1 = BigUint::one();
+
+    let mut i = BigUint::zero();
+    while i < n {
+        let f2 = f0 + &f1;
+
+        // Swap f0 with f1 and f1 with f2.
+        f0 = mem::replace(&mut f1, f2);
+
+        i += 1u32;
+    }
+
+    f0
+}
+
 fn main() {
     let mut exit_code = 0i32;
 
     for arg in env::args().skip(1) {
-        let n = match parse_usize(&arg) {
-            Ok(n) => n,
-            Err(err) => {
-                eprintln!("error: {}: {}", err, arg);
+        macro_rules! print_err {
+            ($err:expr) => {{
+                eprintln!("error: {}: {}", $err, arg);
                 exit_code = 1;
                 continue;
-            }
-        };
+            }};
+        }
 
-        println!("{}", fib(n));
+        let n = match parse_usize(&arg) {
+            Ok(n) => fib(n),
+            Err(ParseError::Overflow) => {
+                match arg.parse::<BigUint>() {
+                    Ok(n) => fib_big(n),
+                    Err(err) => print_err!(err),
+                }
+            }
+            Err(err) => print_err!(err),
+        };
+        println!("{}", n);
     }
 
     process::exit(exit_code);
