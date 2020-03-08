@@ -1,0 +1,19 @@
+[package]
+name = "fib"
+version = "1.0.0"
+authors = ["James Whaley <juicy66173@gmail.com>"]
+description = "A basic fibonacci number calculator."
+license = "MIT/Apache-2.0"
+readme = "README.md"
+edition = "2018"
+
+homepage = "https://github.com/Juici/fib"
+repository = "https://github.com/Juici/calci"
+
+[dependencies]
+num-bigint = "0.2"
+num-traits = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
