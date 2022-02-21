@@ -19,7 +19,7 @@ fn main() {
     let mut stdout = stdout.lock();
 
     for n in ns {
-        let fib = fib::fibonacci(n);
+        let fib = fib::fib(n);
         if let Err(err) = writeln!(stdout, "{}", fib) {
             panic!("failed writing to stdout: {}", err);
         }
