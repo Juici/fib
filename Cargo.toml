@@ -1,6 +1,6 @@
 [package]
 name = "fib"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["James Whaley <juicy66173@gmail.com>"]
 description = "A basic fibonacci number calculator."
 license = "MIT/Apache-2.0"
