@@ -1,19 +1,24 @@
 [package]
 name = "fib"
-version = "1.0.1"
+version = "2.0.0"
 authors = ["James Whaley <juicy66173@gmail.com>"]
 description = "A basic fibonacci number calculator."
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 
 homepage = "https://github.com/Juici/fib"
 repository = "https://github.com/Juici/fib"
 
+keywords = ["fibonacci", "calculator", "big", "number", "integer"]
+categories = ["algorithms", "command-line-utilities", "mathematics"]
+
 [dependencies]
-num-bigint = "0.2"
-num-traits = "0.2"
+smallvec = "1.8"
+rug = { version = "1.15", default-features = false, features = ["integer"] }
 
 [profile.release]
 opt-level = 3
 lto = true
+panic = "abort"
+codegen-units = 1
