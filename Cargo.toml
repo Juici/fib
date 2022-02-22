@@ -17,8 +17,9 @@ categories = ["algorithms", "command-line-utilities", "mathematics"]
 num-bigint = "0.4.3"
 num-traits = "0.2"
 smallvec = "1.8"
-
-cached = { version = "0.30.0", default_features = false, features = ["proc_macro"] }
+rustc-hash = "1.1"
+once_cell = "1.9"
+parking_lot = "0.12"
 
 [profile.release]
 opt-level = 3
