@@ -39,9 +39,10 @@ pub fn parse_u128(src: &str) -> Result<u128, ParseError> {
 
     let mut result = 0u128;
     for &c in digits {
-        let x = match c.checked_sub(b'0') {
-            Some(x) => x as u128,
-            None => return Err(ParseError::InvalidDigit),
+        let x = match c.wrapping_sub(b'0') {
+            x @ 0..=9 => x as u128,
+            _ if c == b'_' => continue,
+            _ => return Err(ParseError::InvalidDigit),
         };
         result = match result.checked_mul(10) {
             Some(result) => result,
