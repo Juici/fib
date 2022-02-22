@@ -6,8 +6,7 @@ use smallvec::SmallVec;
 mod cli;
 
 fn main() {
-    let ns: SmallVec<[u128; 10]> = match env::args().skip(1).map(|s| cli::parse_u128(&s)).collect()
-    {
+    let ns: SmallVec<[_; 10]> = match env::args().skip(1).map(|s| cli::parse_i64(&s)).collect() {
         Ok(ns) => ns,
         Err(err) => {
             eprintln!("error: {}", err);
@@ -23,5 +22,9 @@ fn main() {
         if let Err(err) = writeln!(stdout, "{}", fib) {
             panic!("failed writing to stdout: {}", err);
         }
+    }
+
+    if let Err(err) = stdout.flush() {
+        panic!("failed to flush stdout: {}", err);
     }
 }

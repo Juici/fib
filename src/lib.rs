@@ -1,53 +1,68 @@
-use num_bigint::BigUint;
-use num_traits::{One, Zero};
-use once_cell::sync::Lazy;
-use parking_lot::RwLock;
-use rustc_hash::FxHashMap;
+use rug::Integer;
 
-const INITIAL_CAPACITY: usize = 100;
+fn lucas(n: u64) -> (Integer, Integer) {
+    if n == 0 {
+        let a = Integer::from(2u8);
+        let b = Integer::from(1u8);
+        return (a, b);
+    }
 
-static CACHE: Lazy<RwLock<FxHashMap<u128, BigUint>>> = Lazy::new(|| {
-    RwLock::new(FxHashMap::with_capacity_and_hasher(INITIAL_CAPACITY, Default::default()))
-});
+    let (z, t) = lucas(n >> 1);
+
+    match n & 3 {
+        0 => {
+            let zt = t * &z;
+
+            let a = z.square() - 2u8;
+            let b = zt - 1u8;
+
+            (a, b)
+        }
+        1 => {
+            let zt = z * &t;
+
+            let a = zt - 1u8;
+            let b = t.square() + 2u8;
+
+            (a, b)
+        }
+        2 => {
+            let zt = t * &z;
+
+            let a = z.square() + 2u8;
+            let b = zt + 1u8;
+
+            (a, b)
+        }
+        3 => {
+            let zt = z * &t;
+
+            let a = zt + 1u8;
+            let b = t.square() - 2u8;
+
+            (a, b)
+        }
+        // This branch will be optimised out by the compiler.
+        _ => unreachable!(),
+    }
+}
 
 /// Computes the value of the `n`th term of the Fibonacci sequence.
-pub fn fib(n: u128) -> BigUint {
-    if let Some(value) = CACHE.read_recursive().get(&n) {
-        return value.clone();
+pub fn fib(n: i64) -> Integer {
+    if n == 0 {
+        return Integer::ZERO;
     }
-    fn inner(n: u128) -> BigUint {
-        match n {
-            0 => return BigUint::zero(),
-            1 | 2 => return BigUint::one(),
-            _ => {}
-        }
 
-        if n & 1 != 0 {
-            let k = (n + 1) / 2;
+    let (mut a, b) = lucas(n.unsigned_abs() - 1);
 
-            let mut f0 = fib(k);
-            let mut f1 = fib(k - 1);
+    a <<= 1u32;
+    a += &b;
+    a = a.div_exact_u(5);
 
-            let mut tmp = f0.clone();
-            f0 *= &tmp;
-
-            tmp.clone_from(&f1);
-            f1 *= &tmp;
-
-            f0 + f1
-        } else {
-            let k = n / 2;
-
-            let f0 = fib(k);
-            let mut f1 = fib(k - 1);
-
-            f1 <<= 1u8;
-            f1 += &f0;
-            f1 *= &f0;
-
-            f1
-        }
+    // If `n` is negative and not odd, set the sign of the output to negative.
+    if n < 0 && n & 1 == 0 {
+        a = -a;
     }
-    let value = inner(n);
-    CACHE.write().entry(n).insert_entry(value).get().clone()
+
+    a
 }
